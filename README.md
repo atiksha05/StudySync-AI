@@ -44,14 +44,41 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
-## Deploy to Vercel
+## Deploy to Vercel (before Supabase is set up)
 
-1. Push this repo to GitHub
-2. Import the repo in [Vercel](https://vercel.com)
-3. Add the same environment variables from `.env.local`
-4. Deploy — you'll get a live URL like `studysync-ai.vercel.app`
+You can deploy the **landing page and UI** right away. Auth and uploads will work after you add real Supabase/OpenAI keys later.
 
-This is **separate** from your portfolio. Link to it from your portfolio projects page when ready.
+### 1. Push to GitHub
+
+```bash
+gh auth login
+gh repo create studysync-ai --public --source=. --remote=origin --push
+```
+
+Or create a repo manually on GitHub, then:
+
+```bash
+git remote add origin https://github.com/YOUR_USERNAME/studysync-ai.git
+git branch -M main
+git push -u origin main
+```
+
+### 2. Import in Vercel
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import your `studysync-ai` GitHub repo
+3. Add these **placeholder** environment variables (so the build succeeds):
+
+| Variable | Placeholder value |
+|----------|-------------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://placeholder.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `placeholder-key` |
+| `SUPABASE_SERVICE_ROLE_KEY` | `placeholder-service-key` |
+| `OPENAI_API_KEY` | `sk-placeholder` |
+
+4. Click **Deploy**
+
+You'll get a live URL like `studysync-ai.vercel.app`. Replace the placeholder env vars with real keys when you're ready to enable auth and AI features.
 
 ## Features
 
