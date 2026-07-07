@@ -30,7 +30,26 @@ export function Navbar() {
           StudySync AI
         </Link>
 
-        {!isAuthPage ? (
+        {isAuthPage ? (
+          <nav className="flex items-center gap-2">
+            <Link href="/login">
+              <Button
+                variant={pathname.startsWith("/login") ? "primary" : "ghost"}
+                size="sm"
+              >
+                Sign in
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button
+                variant={pathname.startsWith("/signup") ? "primary" : "ghost"}
+                size="sm"
+              >
+                Sign up
+              </Button>
+            </Link>
+          </nav>
+        ) : (
           <nav className="flex items-center gap-2">
             <Link href="/dashboard">
               <Button variant={pathname.startsWith("/dashboard") ? "primary" : "ghost"} size="sm">
@@ -48,7 +67,7 @@ export function Navbar() {
               Sign out
             </Button>
           </nav>
-        ) : null}
+        )}
       </div>
     </header>
   );
