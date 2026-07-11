@@ -1,15 +1,13 @@
 # StudySync AI
 
-A full-stack Next.js app that turns lecture audio and PDFs into AI-generated study materials — notes, flashcards, quizzes, summaries, and action items.
-
-Built as a standalone PM portfolio project (separate from your main portfolio).
+An AI knowledge workspace for **students** and **professionals**. Turn messy lectures, meetings, PDFs, and notes into organized knowledge, study material, action items, and searchable insights — powered by **Google Gemini**.
 
 ## Stack
 
 - **Next.js** (App Router) + TypeScript
-- **Tailwind CSS**
+- **Tailwind CSS** + Framer Motion
 - **Supabase** (Auth, Postgres, Storage)
-- **OpenAI** (Whisper + GPT)
+- **Google Gemini** (AI processing with provider abstraction + demo fallback)
 
 ## Getting started
 
@@ -23,7 +21,7 @@ npm install
 ### 2. Set up Supabase
 
 1. Create a project at [supabase.com](https://supabase.com)
-2. Run `supabase/schema.sql` in the SQL editor
+2. Run `supabase/schema.sql` in the SQL editor (creates `profiles`, `workspaces`, and legacy `lectures` tables)
 3. Create a **private** Storage bucket named `lectures`
 4. Add the storage policies from the bottom of `schema.sql`
 5. In Authentication → Providers, enable Email
@@ -36,6 +34,13 @@ Copy `.env.example` to `.env.local` and fill in your keys:
 cp .env.example .env.local
 ```
 
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
+| `GEMINI_API_KEY` | Google Gemini API key (optional — app uses demo data when unset) |
+
 ### 4. Run locally
 
 ```bash
@@ -44,63 +49,52 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
-## Deploy to Vercel (before Supabase is set up)
+## User modes
 
-You can deploy the **landing page and UI** right away. Auth and uploads will work after you add real Supabase/OpenAI keys later.
+After signup, users choose their workspace:
 
-### 1. Push to GitHub
+- **Student** — lectures, exams, flashcards, quizzes, study plans
+- **Professional** — meetings, decisions, action items, follow-ups
+- **Career** — applications, companies, resumes, interviews, career prep
 
-```bash
-gh auth login
-gh repo create studysync-ai --public --source=. --remote=origin --push
-```
-
-Or create a repo manually on GitHub, then:
-
-```bash
-git remote add origin https://github.com/YOUR_USERNAME/studysync-ai.git
-git branch -M main
-git push -u origin main
-```
-
-### 2. Import in Vercel
-
-1. Go to [vercel.com/new](https://vercel.com/new)
-2. Import your `studysync-ai` GitHub repo
-3. Add these **placeholder** environment variables (so the build succeeds):
-
-| Variable | Placeholder value |
-|----------|-------------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://placeholder.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `placeholder-key` |
-| `SUPABASE_SERVICE_ROLE_KEY` | `placeholder-service-key` |
-| `OPENAI_API_KEY` | `sk-placeholder` |
-
-4. Click **Deploy**
-
-You'll get a live URL like `studysync-ai.vercel.app`. Replace the placeholder env vars with real keys when you're ready to enable auth and AI features.
+Mode is stored in the user profile and can be switched anytime in Settings.
 
 ## Features
 
-- Supabase email authentication
-- Dashboard with lecture list
-- Upload audio/PDF to Supabase Storage
-- OpenAI processing (transcription + study material generation)
-- Lecture detail page with tabs: Summary, Notes, Flashcards, Quiz, Tasks
-- Loading, error, and empty states
+- Supabase email authentication + onboarding flow
+- Student and Professional dashboards with mode-specific widgets
+- Upload page (lecture audio, meeting recording, PDF, text notes, image notes)
+- Gemini-powered processing with demo fallback when API key is not configured
+- Workspace detail pages with mode-specific tabs
+- Shared navigation: Dashboard, Upload, Library, Search, Ask AI, Tasks, Analytics, Settings
+- Dark energetic blue-purple-pink theme
 
 ## Project structure
 
 ```
-app/           # Pages and API routes
-components/    # UI and feature components
-lib/           # Supabase, OpenAI, utilities
-types/         # TypeScript types
-supabase/      # Database schema
+app/
+  (app)/          # Authenticated app shell with sidebar
+  (auth)/         # Login and signup
+  api/            # Workspaces, profile, Ask AI routes
+  onboarding/     # Mode selection after signup
+components/       # UI, auth, dashboard, workspace
+lib/
+  ai/             # Gemini provider abstraction + demo data
+  profile.ts      # Profile CRUD
+types/            # TypeScript types
+supabase/         # Database schema
 ```
 
 ## API routes
 
-- `GET /api/lectures` — list user's lectures
-- `GET /api/lectures/[id]` — get one lecture
-- `POST /api/lectures/[id]/process` — process uploaded file with OpenAI
+- `GET/POST /api/workspaces` — list and create workspaces
+- `GET /api/workspaces/[id]` — get workspace
+- `POST /api/workspaces/[id]/process` — process content with Gemini
+- `POST /api/profile/onboarding` — save user mode after onboarding
+- `POST /api/ask` — Ask AI chat endpoint
+
+## Deploy to Vercel
+
+1. Push to GitHub and import in [Vercel](https://vercel.com/new)
+2. Add environment variables (placeholders work for UI-only preview)
+3. Replace with real Supabase keys to enable auth; add `GEMINI_API_KEY` for live AI

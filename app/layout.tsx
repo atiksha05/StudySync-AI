@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "StudySync AI",
   description:
-    "Turn lecture audio and PDFs into AI-generated notes, flashcards, quizzes, and action items.",
+    "AI knowledge workspace for students and professionals. Turn lectures, meetings, PDFs, and notes into organized insights with Gemini.",
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      <body className="min-h-full flex flex-col bg-[#050816] text-[#F8FAFC]">
         <Navbar />
         <main className="flex-1">{children}</main>
       </body>

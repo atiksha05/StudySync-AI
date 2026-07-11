@@ -2,71 +2,74 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, LogOut, Plus } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
+
+  const isAuthPage =
+    pathname.startsWith("/login") || pathname.startsWith("/signup");
+  const isAppShell =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/upload") ||
+    pathname.startsWith("/workspace") ||
+    pathname.startsWith("/library") ||
+    pathname.startsWith("/search") ||
+    pathname.startsWith("/ask") ||
+    pathname.startsWith("/tasks") ||
+    pathname.startsWith("/analytics") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/companies") ||
+    pathname.startsWith("/company") ||
+    pathname.startsWith("/applications") ||
+    pathname.startsWith("/interview-prep") ||
+    pathname.startsWith("/resume-tracker") ||
+    pathname.startsWith("/behavioral-practice") ||
+    pathname.startsWith("/technical-practice") ||
+    pathname.startsWith("/networking");
+  const isOnboarding = pathname.startsWith("/onboarding");
+
+  if (isAuthPage || isAppShell || isOnboarding) {
+    return null;
+  }
 
   async function handleSignOut() {
+    const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
     router.refresh();
   }
 
-  const isAuthPage =
-    pathname.startsWith("/login") || pathname.startsWith("/signup");
+  const isLanding = pathname === "/";
 
   return (
-    <header className="border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+    <header className="relative z-10 border-b border-white/10 bg-[#050816]/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white">
+        <Link href="/" className="flex items-center gap-2 font-semibold text-[#F8FAFC]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] text-white">
             <BookOpen className="h-5 w-5" />
           </span>
           StudySync AI
         </Link>
 
-        {isAuthPage ? (
+        {isLanding ? (
           <nav className="flex items-center gap-2">
             <Link href="/login">
-              <Button
-                variant={pathname.startsWith("/login") ? "primary" : "ghost"}
-                size="sm"
-              >
+              <Button variant="ghost" size="sm">
                 Sign in
               </Button>
             </Link>
             <Link href="/signup">
-              <Button
-                variant={pathname.startsWith("/signup") ? "primary" : "ghost"}
-                size="sm"
-              >
-                Sign up
-              </Button>
+              <Button size="sm">Get started</Button>
             </Link>
           </nav>
         ) : (
-          <nav className="flex items-center gap-2">
-            <Link href="/dashboard">
-              <Button variant={pathname.startsWith("/dashboard") ? "primary" : "ghost"} size="sm">
-                Dashboard
-              </Button>
-            </Link>
-            <Link href="/lectures/new">
-              <Button size="sm">
-                <Plus className="h-4 w-4" />
-                Upload
-              </Button>
-            </Link>
-            <Button variant="ghost" size="sm" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4" />
-              Sign out
-            </Button>
-          </nav>
+          <Button variant="ghost" size="sm" onClick={handleSignOut}>
+            Sign out
+          </Button>
         )}
       </div>
     </header>
